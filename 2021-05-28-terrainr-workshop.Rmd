@@ -1,6 +1,14 @@
+---
+title: Accessing the USGS National Map and making 3D landscapes with terrainr
+author: Mike Mahoney, Colleen Nell, Lindsay Platt
+date: 2021-05-28
+output_file: index.html
+---
+
 This is an R Markdown document containing code for the workshop "Accessing the 
 USGS National Map and making 3D maps with terrainr", held virtually on 
-2021-05-28.
+2021-05-28. If you want to follow along with the workshop as we go, 
+[click this link to download the R Markdown notebook](https://mikemahoney218.github.io/2021-05-28-CDI-terrainr/2021-05-28-terrainr-workshop.Rmd).
 
 If you're not familiar with R Markdown, this document lets us write both plain 
 text and code in a single document. Document sections inside three ` marks are
