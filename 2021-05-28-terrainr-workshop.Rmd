@@ -23,6 +23,7 @@ This chunk will install any missing packages, and then load them all:
 if (!require("sf")) install.packages("sf")
 if (!require("terrainr")) install.packages("terrainr")
 if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("scico")) install.packages("scico")
 if (!require("raster")) install.packages("raster")
 if (!require("progressr")) install.packages("progressr")
 if (!require("progress")) install.packages("progress")
@@ -30,6 +31,7 @@ if (!require("progress")) install.packages("progress")
 library("sf")
 library("terrainr")
 library("ggplot2")
+library("scico")
 library("raster")
 library("progressr")
 handlers("progress")
@@ -232,6 +234,97 @@ plotRGB(campsites_ortho)
 This process is particularly useful for combining multiple map tiles from the 
 National Map into a single basemap, allowing you to overlay roads, rivers, and 
 more on orthoimagery.
+
+## Example 
+
+Now that we've seen a basic workflow using terrainr to pull layers from the National Map and plot with ggplot2, let's have some fun with it! Starting with the latitude and longitude coordinates for a new site, we'll create an sf object and add a spatial buffer around it like before.
+
+```{r}
+# yosemite NP
+site <- data.frame(lat = 37.7456, lng = -119.5521)
+
+# convert to sf object and assign coordinate reference system 
+site_sf <- st_as_sf(site, coords = c("lng","lat"), crs = 4326)
+
+# buffer around point
+site_bbox <- set_bbox_side_length(site_sf, 10, "km")
+```
+
+Now, to pull some data using terrainr. In the previous example we looked at elevation and orthoimagery. Other supported services are: nhd, govunits, contours, geonames, NHDPlus_HR, structures, transportation, and wbd. More info here: https://docs.ropensci.org/terrainr/#available-datasets
+
+Let's try elevation and contours this time
+
+```{r}
+with_progress(
+  site_tiles <- get_tiles(site_bbox, 
+                            output_prefix = "yosemite_np_10m",
+                            services = c("elevation", "contours"),
+                            resolution = 5)
+)
+
+site_tiles
+```
+
+Now we can convert the elevation and contour layers to plot with ggplot2. The contours layer is an RGBA multi-band raster layer, similar to the orthoimagery. RGBA has 4 channels: red, green, blue, and alpha. Alpha is like opacity
+
+```{r}
+elev <- raster(site_tiles$elevation)
+contours <- stack(site_tiles$contours)
+
+# look at structure of contours raster - has 4 layers
+contours
+```
+
+
+
+```{r}
+ggplot() + 
+  geom_spatial_rgb(data = contours,
+                   mapping = aes(x, y, r = red, g = green, b = blue)) + 
+  coord_sf(crs = 4326) + 
+  theme_void()
+```
+
+For the purposes of the workshop, we're avoiding large downloads. But if we were to increase the resolution even more, say to 1m, terrainr might break up the focal region into multiple tiles:
+
+```{r, eval = FALSE}
+## warning: running this code chunk will take over 5 minutes to complete
+with_progress(
+  site_tiles_1 <- get_tiles(site_bbox, 
+                            output_prefix = "yosemite_np_10m",
+                            services = c("elevation", "contours"),
+                            resolution = 1)
+)
+
+site_tiles_1
+
+```
+
+
+
+
+The scico package (https://github.com/thomasp85/scico) offers a selection of color palettes developed for scientific applications. They are perceptually uniform to represent data fairly, and universally readable by both color-vision deficient and color-blind people. 
+
+```{r}
+library(scico)
+
+scico_palette_show()
+
+```
+
+
+
+## On your own  
+
+
+
+```{r}
+
+
+```
+
+
+
 
 # Part 4: Unity
 
