@@ -208,8 +208,11 @@ of the pile and the last image on the top. As a result, we now have our campsite
 locations on top of our orthoimagery, as a single image:
 
 ```{r}
-campsites_ortho <- stack("campsites_ortho.png")
-plotRGB(campsites_ortho)
+ggplot() + 
+  geom_spatial_rgb(data = "campsites_ortho.png",
+                   mapping = aes(x, y, r = red, g = green, b = blue)) + 
+  theme_void() + 
+  coord_fixed()
 ```
 
 This process is particularly useful for combining multiple map tiles from the 
