@@ -34,6 +34,7 @@ if (!require("ggplot2")) install.packages("ggplot2")
 if (!require("raster")) install.packages("raster")
 if (!require("progressr")) install.packages("progressr")
 if (!require("progress")) install.packages("progress")
+if (!require("tiff")) install.packages('tiff')
 
 library("sf")
 library("terrainr")
@@ -127,9 +128,11 @@ output_tiles
 
 This can be really helpful when trying to work with these files inside R. For 
 instance, to see our elevation raster, we can plot our data easily enough using 
-functions from `ggplot2`. First, we'll convert the raster to a data frame:
+functions from `ggplot2`. First, we'll load the raster, then convert it to a 
+data frame:
 
 ```{r}
+elevation <- raster(output_tiles$elevation)
 elevation <- as.data.frame(elevation, xy = TRUE)
 names(elevation) <- c("x", "y", "z")
 ```
@@ -150,7 +153,7 @@ need to use a new function from `terrainr` called `geom_spatial_rgb`:
 
 ```{r}
 ggplot() + 
-  geom_spatial_rgb(data = ortho,
+  geom_spatial_rgb(data = output_tiles$ortho,
                    mapping = aes(x, y, r = red, g = green, b = blue)) + 
   coord_sf(crs = 4326) + 
   theme_void()
@@ -166,7 +169,7 @@ top of a base map:
 
 ```{r}
 ggplot() + 
-  geom_spatial_rgb(data = ortho,
+  geom_spatial_rgb(data = output_tiles$ortho,
                    mapping = aes(x, y, r = red, g = green, b = blue)) + 
   geom_sf(data = campsites, shape = 4, color = "red") + 
   coord_sf(crs = 4326) + 
@@ -187,13 +190,6 @@ vector_to_overlay(
   shape = 4,
   color = "red"
 )
-```
-
-This new basemap can be loaded and displayed just like our orthoimage map:
-
-```{r}
-campsite_overlay <- stack("campsite_overlay.png")
-plotRGB(campsite_overlay)
 ```
 
 To combine this new image with our orthoimagery, we'll want to use the 
