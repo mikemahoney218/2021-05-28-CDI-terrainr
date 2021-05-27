@@ -126,30 +126,8 @@ output_tiles
 # Part 3: Plotting Data
 
 This can be really helpful when trying to work with these files inside R. For 
-instance, to see our elevation raster, we can load it into R using the `raster`
-function, then graph it using `plot`:
-
-```{r}
-elevation <- raster(output_tiles$elevation)
-
-plot(elevation, col = terrain.colors(255))
-```
-
-We can visualize our orthoimagery in a similar way. Because this image is stored
-as a multi-band raster (that is, as a color image), we'll have to use the 
-`stack` and `plotRGB` functions in the place of `raster` and `plot`:
-
-```{r}
-ortho <- stack(output_tiles$ortho)
-
-plotRGB(ortho, scale = 1)
-```
-
-These visualizations are fast and work perfectly fine, but can be difficult to 
-extend further. For a bit more flexibility, we might try and use the `ggplot2`
-package to plot our data instead. Plotting the elevation raster can be done 
-easily enough using functions from `ggplot2`. First, we'll convert the raster
-to a data frame:
+instance, to see our elevation raster, we can plot our data easily enough using 
+functions from `ggplot2`. First, we'll convert the raster to a data frame:
 
 ```{r}
 elevation <- as.data.frame(elevation, xy = TRUE)
@@ -166,7 +144,8 @@ ggplot(elevation, aes(x, y, fill = z)) +
   theme_void()
 ```
 
-Plotting our orthoimagery is again a bit of a different process. This time, we 
+Plotting our orthoimagery is a bit of a different process; `ggplot2` doesn't by
+default have a great way to handle these multi-band rasters. This time, we 
 need to use a new function from `terrainr` called `geom_spatial_rgb`:
 
 ```{r}
