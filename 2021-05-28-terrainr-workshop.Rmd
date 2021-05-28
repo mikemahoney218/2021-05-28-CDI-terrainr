@@ -238,7 +238,7 @@ site_bbox <- set_bbox_side_length(site_sf, 10, "km")
 
 Now, to pull some data using terrainr. In the previous example we looked at elevation and orthoimagery. Other supported services are: nhd, govunits, contours, geonames, NHDPlus_HR, structures, transportation, and wbd. More info here: https://docs.ropensci.org/terrainr/#available-datasets
 
-Let's try elevation and contours this time
+Let's try elevation and contours this time:
 
 ```{r}
 with_progress(
@@ -318,15 +318,13 @@ site_tiles_1
 ```
 
 In which case they can be merged together using `merge_rasters`  
-```{r}
+```{r, eval = FALSE}
 merge_el <- terrainr::merge_rasters(site_tiles_1$elevation, 
                           tempfile(fileext = ".tif"))
 
 merge_co <- terrainr::merge_rasters(site_tiles_1$contours, 
                           tempfile(fileext = ".tif"))
 ```
-
-
 
 ## On your own  
 
