@@ -297,14 +297,14 @@ names(contour_df) <- c("x", "y", "z", "r", "g", "b", "a") # longitude, latitude,
 contour_lines <- contour_df[contour_df$a != 0, ]
 
 ## plot it!
-ggplot(data=contour_lines)+
+ggplot(data = contour_lines)+
   geom_raster(mapping = aes(x, y, fill = z))+
   theme_void()+
   theme(plot.background = element_rect(fill="black"),
         plot.title = element_text(color="white"),
         legend.position = "none")+
-  coord_equal()+
-  scale_fill_scico(palette="hawaii", direction = -1)+
+  coord_sf(crs = 4326)+
+  scale_fill_scico(palette="imola", direction = 1)+
   ggtitle(paste("Half dome", site$lat, site$lng))
 
 ```
@@ -344,14 +344,40 @@ merge_co <- terrainr::merge_rasters(site_tiles_1$contours,
 
 ## On your own  
 
-Use the dataframe below to pull new starting coordinates and recreate the map. Share what you made in the chat!
+Use the dataframe below to pull new starting coordinates and recreate the map in a new location, with new layer, or maybe a new color palette. Share what you made in the chat!
 
 ```{r}
-## put a dataframe with coordinates here, where each row has the coordinates for a different site. Will add a random row sampler so people are getting different results. 
+# dataframe of cool places in the US
+places <- structure(list(ï..name = c("half dome", "moki dugway", "badwater basin", 
+"mount whitney", "monument valley navajo tribal park", "devil's lake", 
+"cadillac mountain", "mcafee knob", "sleeping bear dunes ", "grand canyon", 
+"miguel's pizza at red river gorge", "between cumberland and blue ridge mountains", 
+"missouri river floodplain and bluff", "shawangunk mountains", 
+"lake winnipesaukee, new hampshire", "mount washington, new hampshire", 
+"gravity hill, pa", "orcas island", "grand canyon of yellowstone", 
+"mauna loa", "tetons", "rocky mountain biological station"), 
+    lat = c(37.746036, 37.302306, 36.250278, 36.578581, 36.983333, 
+    43.420033, 44.35127, 37.392487, 44.878727, 36.2388, 37.783004, 
+    37.1177098, 38.568762, 41.72469, 43.606096, 44.270504, 40.153283, 
+    48.654167, 44.895556, 19.479444, 43.75, 38.958611), lng = c(-119.53294, 
+    -109.968944, -116.825833, -118.291995, -110.100411, -89.737405, 
+    -68.22649, -80.036298, -86.066458, -112.350427, -83.682861, 
+    -81.132816, -90.883408, -74.204946, -71.338624, -71.303115, 
+    -76.839954, -122.938333, -110.389444, -155.602778, -110.833333, 
+    -106.987778)), class = "data.frame", row.names = c(NA, -22L
+))
 
+# randomly pick one row from the dataframe
+site <- places[sample(nrow(places), 1), ]
+
+# convert to sf object and assign coordinate reference system 
+site_sf <- st_as_sf(site, coords = c("lng","lat"), crs = 4326)
+
+# buffer around point
+site_bbox <- set_bbox_side_length(site_sf, 10, "km")
+
+# keep going!
 ```
-
-
 
 
 # Part 4: Unity
